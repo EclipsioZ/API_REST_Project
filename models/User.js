@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
 
     //Association 1,n or 0,n with other table
     models.User.belongsToMany(models.Picture, { through: models.Like, foreignKey: 'id_User'}),
-    models.User.belongsToMany(models.Activities, { through: models.Register, foreignKey: 'id_User'})
+    models.User.belongsToMany(models.Activities, { through: models.Register, foreignKey: 'id_User', otherKey: 'id_Activities'})
   };
   return User;
 };

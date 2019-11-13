@@ -36,6 +36,11 @@ exports.router = (function() {
     //Event
     apiRouter.route('/events/all').get(eventCtrl.all);
     apiRouter.route('/events/get').get(eventCtrl.get);
+    apiRouter.route('/events/subscribe').post(eventCtrl.subscribe);
+    apiRouter.route('/events/unsubscribe').post(eventCtrl.unsubscribe);
+    apiRouter.route('/events/addComment').post(eventCtrl.commentsAdd);
+    apiRouter.route('/events/delComment').post(eventCtrl.commentsRemove);
+    
 
     //Token
     apiRouter.route('/token').get(tokenCtrl.token);

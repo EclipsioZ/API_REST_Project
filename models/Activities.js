@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
 
     //Association 1,n or 0,n with other table
     models.Activities.belongsToMany(models.Rank, { through: models.CanView, foreignKey: 'id_Activities'}),
-    models.Activities.belongsToMany(models.User, { through: models.Register, foreignKey: 'id_Activities'}),
+    models.Activities.belongsToMany(models.User, { through: models.Register}),
 
     //Association 0,n and other 1,1 or 0,1
     models.Activities.hasMany(models.Picture)
