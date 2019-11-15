@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     models.Picture.hasMany(models.Comments),
 
     //Association 1,n or 0,n with other table
-    models.Picture.belongsToMany(models.User, { through: models.Like, foreignKey: 'id_Users'})
+    models.Picture.belongsToMany(models.User, { through: models.Like, foreignKey: 'id_User'})
 
   };
   return Picture;

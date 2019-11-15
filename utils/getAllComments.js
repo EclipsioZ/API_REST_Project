@@ -1,5 +1,5 @@
 /**
- * @file getActivities
+ * @file getAllComments
  * @author EclipsioZ
  * @license GPL-3.0
  */
@@ -16,8 +16,8 @@ module.exports = (id) => {
             attributes: ['id','content','id_User','id_Picture','id_Comments'],
             where: {id_Picture: id, id_Comments: null}
         })
-        .then(comment => {;
-            if(comment) {
+        .then(comment => {
+            if(comment.length != 0) {
                 resolve(comment);
             }
             else {

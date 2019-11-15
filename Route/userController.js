@@ -10,12 +10,14 @@
  // Importation de la librairie jwt.utils
  const jwtUtils = require('../utils/jwt.utils.js')
 
+  // Importation de la librairie jwt
+  var jwt = require('jsonwebtoken');
 
  // Importation de la bdd
  const db = require('../models');
 
- // Définition de nos routes
 
+ // Définition des routes des utilisateurs
  module.exports = {
 
     register: function(req, res){
@@ -105,6 +107,57 @@
         .catch(function(err) {
             return res.status(500).json({ 'error': 'Impossible de vérifier l\'utilisateur !'});
         });
+    },
+    update: function(req, res){
+
+        var token = req.header('token');
+        decryptedToken = jwt.decode(token);
+        var id = req.body.id;
+        var lastname = req.body.lastname;
+        var firstname = req.body.firstname;
+        var mail = req.body.mail;
+        var password = req.body.firstname;
+        var id_Preferences = req.body.id_Preferences;
+        var id_Center = req.body.id_Center;
+        userRank = decryptedToken.userRank;
+        id_User = decryptedToken.userId;
+
+        if(userRank >= 1) {
+            db.User.findOne({
+                attributes: ['id','lastname','firstname','mail','password','id_Preferences','id_Center'],
+                where: {id: id}
+            })
+            .then(function(updateUser){
+
+                if(updateUser) {
+                    bcrypt.hash(password, 5, function(err, bcryptedPassword) {
+                        db.User.update({
+                            lastname: lastname,
+                            firstname: firstname,
+                            mail: mail,
+                            password: bcryptedPassword,
+                            id_Preferences: id_Preferences,
+                            id_Center: id_Center
+
+                            },{where: {id: id}
+                        })
+                        .then(function(upUser) {
+                            return res.status(201).json({'success': "Profil modifiée!"});
+                        })
+                        .catch(function(err) {
+                        return res.status(500).json({'error': 'Erreur lors de la modification du profil!'});
+                        });
+                    });
+                } else {
+                    return res.status(409).json({'error': 'Cette Utilisateur n\'existe pas !'});
+                }
+            })
+            .catch(function(err) {
+                return res.status(500).json({ 'error': 'Impossible de vérifier l\'utilisateur !'});
+            });
+        } else {
+            return res.status(500).json({ 'error': 'Vous n\'avez pas la permission de modifier le profil !'});
+        }
     },
     eventOld: function(req, res){
 

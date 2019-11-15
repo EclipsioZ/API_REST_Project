@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       delevery_date: {
-        type: Sequelize.DATE
+        type: Sequelize.INTEGER
       },
       nb_sales: {
         type: Sequelize.INTEGER

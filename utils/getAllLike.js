@@ -1,21 +1,24 @@
 /**
- * @file getActivities
+ * @file getAllLike
  * @author EclipsioZ
  * @license GPL-3.0
  */
+
+//Importtaion de la librairie sequelize
+const Sequelize = require('sequelize');
 
 // Importation de la bdd
 const db = require('../models');
 
 module.exports = (id) => {
     return new Promise(async (resolve, reject) => {
-        db.Activities.findOne({
-            attributes: ['id','title','description','picture','begin_date','end_date','top_event','price','id_User','id_Center','id_State','id_Recurrence'],
-            where: {id: id}
+        db.Like.findAll({
+            attributes: ['id_User','id_Picture'],
+            where: {id_Picture: id}
         })
-        .then(userName => {
-            if(userName) {
-                resolve(userName);
+        .then(like => {
+            if(like.length != 0) {
+                resolve(like);
             }
             else {
                 resolve(false);

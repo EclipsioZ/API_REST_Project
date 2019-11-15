@@ -1,5 +1,5 @@
 /**
- * @file getnameofuser
+ * @file getNameOfUser
  * @author EclipsioZ
  * @license GPL-3.0
  */

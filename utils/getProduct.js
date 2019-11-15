@@ -1,5 +1,5 @@
 /**
- * @file getActivities
+ * @file getProduct
  * @author EclipsioZ
  * @license GPL-3.0
  */
@@ -8,14 +8,16 @@
 const db = require('../models');
 
 module.exports = (id) => {
+
     return new Promise(async (resolve, reject) => {
-        db.Activities.findOne({
-            attributes: ['id','title','description','picture','begin_date','end_date','top_event','price','id_User','id_Center','id_State','id_Recurrence'],
+
+        db.Product.findOne({
+            attributes: ['id','label','description','picture','price','delevery_date','nb_sales','id_Center','id_Category'],
             where: {id: id}
         })
-        .then(userName => {
-            if(userName) {
-                resolve(userName);
+        .then(product => {
+            if(product) {
+                resolve(product);
             }
             else {
                 resolve(false);

@@ -1,5 +1,5 @@
 /**
- * @file getActivities
+ * @file getAllRegister
  * @author EclipsioZ
  * @license GPL-3.0
  */
@@ -8,14 +8,15 @@
 const db = require('../models');
 
 module.exports = (id) => {
+
     return new Promise(async (resolve, reject) => {
-        db.Activities.findOne({
-            attributes: ['id','title','description','picture','begin_date','end_date','top_event','price','id_User','id_Center','id_State','id_Recurrence'],
-            where: {id: id}
+        db.Register.findAll({
+            attributes: ['id_Activities','id_User'],
+            where: {id_Activities: id}
         })
-        .then(userName => {
-            if(userName) {
-                resolve(userName);
+        .then(register => {
+            if(register != 0) {
+                resolve(register);
             }
             else {
                 resolve(false);

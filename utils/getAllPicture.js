@@ -1,5 +1,5 @@
 /**
- * @file getActivities
+ * @file getAllPicture
  * @author EclipsioZ
  * @license GPL-3.0
  */
@@ -8,14 +8,15 @@
 const db = require('../models');
 
 module.exports = (id) => {
+
     return new Promise(async (resolve, reject) => {
         db.Picture.findAll({
             attributes: ['id','link','id_User','id_Activities'],
             where: {id_Activities: id}
         })
-        .then(activities => {;
-            if(activities) {
-                resolve(activities);
+        .then(picture => {
+            if(picture) {
+                resolve(picture);
             }
             else {
                 resolve(false);

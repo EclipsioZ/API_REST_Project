@@ -1,5 +1,5 @@
 /**
- * @file getAllCommentsOfComments
+ * @file delAllCommentsOfComments
  * @author EclipsioZ
  * @license GPL-3.0
  */
@@ -12,17 +12,11 @@ const db = require('../models');
 
 module.exports = (id) => {
     return new Promise(async (resolve, reject) => {
-        db.Comments.findAll({
-            attributes: ['id','content','id_User','id_Picture','id_Comments'],
+        db.Comments.destroy({
             where: {id_Comments: id}
         })
         .then(commentOfComment => {;
-            if(commentOfComment) {
-                resolve(commentOfComment);
-            }
-            else {
-                resolve(false);
-            }
+                resolve(true);
         })
         .catch(err => {
             resolve(err);
