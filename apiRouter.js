@@ -32,6 +32,8 @@ exports.router = (function() {
     apiRouter.route('/users/register/').post(usersCtrl.register);
     apiRouter.route('/users/login/').post(usersCtrl.login);
     apiRouter.route('/users/update/').post(usersCtrl.update);
+    apiRouter.route('/users/getAll/').get(usersCtrl.getAll);
+    apiRouter.route('/users/get/').get(usersCtrl.get);
 
     //Paramètres
     apiRouter.route('/centers').get(paramCtrl.centers);
@@ -50,6 +52,7 @@ exports.router = (function() {
         apiRouter.route('/shop/createCart').post(shopCtrl.addCart);
         apiRouter.route('/shop/deleteCart').post(shopCtrl.delCart);
         apiRouter.route('/shop/addProductToCart').post(shopCtrl.addProductToCart);
+        apiRouter.route('/shop/delProductToCart').post(shopCtrl.delProductToCart);
 
         //Category
         apiRouter.route('/shop/getCategories').get(shopCtrl.getCategories);
@@ -62,6 +65,7 @@ exports.router = (function() {
         apiRouter.route('/shop/getProduct').get(shopCtrl.getProduct);
         apiRouter.route('/shop/createProduct').post(shopCtrl.addProduct);
         apiRouter.route('/shop/updateProduct').post(shopCtrl.updateProduct);
+        apiRouter.route('/shop/updateNbSalesProduct').post(shopCtrl.updateNbSalesProduct);
         apiRouter.route('/shop/deleteProduct').post(shopCtrl.deleteProduct);
 
     //Event
@@ -72,7 +76,6 @@ exports.router = (function() {
         apiRouter.route('/events/add').post(eventCtrl.add);
         apiRouter.route('/events/update').post(eventCtrl.update);
         apiRouter.route('/events/del').post(eventCtrl.del);
-        apiRouter.route('users/events/old').get(usersCtrl.eventOld);
 
         //Subscription
         apiRouter.route('/events/getSubscribe').get(eventCtrl.getSubscribe);
@@ -88,9 +91,11 @@ exports.router = (function() {
         //Picture
         apiRouter.route('/events/addPicture').post(eventCtrl.pictureAdd);
         apiRouter.route('/events/delPicture').post(eventCtrl.pictureRemove);
+        apiRouter.route('/events/getAllPicture').get(eventCtrl.getAllPicture);
         
         //Like
-        apiRouter.route('/events/getLike').post(eventCtrl.getLike);
+        apiRouter.route('/events/getLike').get(eventCtrl.getLike);
+        apiRouter.route('/events/getAllLike').get(eventCtrl.getAllLike);
         apiRouter.route('/events/like').post(eventCtrl.like);
         apiRouter.route('/events/unlike').post(eventCtrl.unlike);
     

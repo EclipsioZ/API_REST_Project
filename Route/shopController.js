@@ -10,6 +10,9 @@
  // Importation du module getAllPicture
 const  getAllProduct = require('../utils/getAllProduct.js');
 
+ // Importation du module delAllContains
+ const  delAllContains = require('../utils/delAllContains.js');
+
  // Importation du module getProduct
  const  getProduct = require('../utils/getProduct.js');
 
@@ -123,15 +126,16 @@ const  getAllProduct = require('../utils/getAllProduct.js');
 
         var token = req.header('token');
         decryptedToken = jwt.decode(token);
-        var id = req.body.id;
         id_Rank = decryptedToken.userRank;
         id_User = decryptedToken.userId;
 
         db.Cart.findOne({
             attributes: ['id','id_User'],
-            where: {id: id, id_User: id_User}
+            where: {id_User: id_User}
         })
-        .then(function(deleteCart){
+        .then(async function(deleteCart){
+
+            await delAllContains(deleteCart.id);
 
             if(deleteCart) {
                     var deleteCart = db.Cart.destroy({
@@ -210,6 +214,55 @@ const  getAllProduct = require('../utils/getAllProduct.js');
             });
         } else {
 
+        }
+    },
+    delProductToCart: function(req, res){
+
+        var token = req.header('token');
+        id_Product = req.body.id_Product;
+        decryptedToken = jwt.decode(token);
+        id_Rank = decryptedToken.userRank;
+        id_User = decryptedToken.userId;
+
+        if(id_Rank >= 1) {
+
+            db.Cart.findOne({
+                attributes: ['id','id_User'],
+                where: {id_User: id_User}
+            })
+            .then(function(cart){
+                db.Contains.findOne({
+                    attributes: ['id_Cart','id_Product','quantity'],
+                    where: {id_Cart: cart.id, id_Product: id_Product}
+                })
+                .then(function(delProduct){
+
+                    if(delProduct) {
+                            var delProduct = db.Contains.destroy({
+                            where: {id_Product: id_Product}
+                            })
+                            .then(function(newCart) {
+                                return res.status(201).json({'success': "Produit supprimé !"});
+                            })
+                            .catch(function(err) {
+                                console.log(err)
+                            return res.status(500).json({'error': 'Erreur lors de la supression du produit !'});
+                            });
+                    } else {
+
+                            return res.status(500).json({'error': 'Ce produit ne fait partie de ce panier !'});
+
+                    }
+                })
+                .catch(function(err) {
+                    return res.status(500).json({ 'error': 'Vous n\'avez pas la permission de supprimer un produit du panier !'});
+                });
+            })
+            .catch(function(err) {
+                return res.status(500).json({ 'error': 'Impossible de vérifier le panier !'});
+            });
+        } else {
+            return res.status(500).json({ 'error': 'Vous n\'avez pas la permission de supprimer un produit du panier !'});  
         }
     },
     getCategoriesAndProducts: function(req, res){
@@ -484,6 +537,46 @@ const  getAllProduct = require('../utils/getAllProduct.js');
                         },{where: {id: id}})
                         .then(function(upProduct) {
                             return res.status(201).json({'success': "Produit modifiée!"});
+                        })
+                        .catch(function(err) {
+                            console.log(err)
+                        return res.status(500).json({'error': 'Erreur lors de la modification du produit !'});
+                        });
+                } else {
+                    return res.status(409).json({'error': 'Ce produit n\'existe pas !'});
+                }
+            })
+            .catch(function(err) {
+                console.log(err);
+                return res.status(500).json({ 'error': 'Impossible de vérifier le produit !'});
+            });
+        } else {
+            return res.status(500).json({ 'error': 'Vous n\'avez pas la permission de modifier un produit !'});
+        }
+    },
+    updateNbSalesProduct: function(req, res){
+
+        var token = req.header('token');
+        decryptedToken = jwt.decode(token);
+        var id = req.body.id;
+        var nb_sales = req.body.nb_sales;
+        id_Rank = decryptedToken.userRank;
+        id_User = decryptedToken.userId;
+
+        if(id_Rank >= 3) {
+            db.Product.findOne({
+                attributes: ['id','nb_sales'],
+                where: {id: id}
+            })
+            .then(function(updateProduct){
+
+                nb = parseInt(nb_sales) + parseInt(updateProduct.nb_sales);
+                if(updateProduct) {
+                    db.Product.update({
+                        nb_sales: nb
+                        },{where: {id: id}})
+                        .then(function(upProduct) {
+                            return res.status(201).json({'success': "Nombre de ventes ajouté !"});
                         })
                         .catch(function(err) {
                             console.log(err)

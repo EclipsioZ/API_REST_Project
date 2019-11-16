@@ -717,10 +717,57 @@ module.exports = {
             return res.status(500).json({ 'error': 'Impossible de supprimer l\'image !'});
         });
     },
+    getAllPicture: async function(req, res){
+
+        db.Activities.findAll({
+            attributes: ['id','title']
+        })
+        .then(async function(Activities){
+            if(Activities) {
+
+                if(Activities.length != 0) {
+                    for(var i = 0; i < Activities.length; i++) {
+
+                        AllPictures = await getAllPicture(Activities[i].id);
+                        console.log(AllPictures)
+                        if(AllPictures.length != 0){
+                            for(var j = 0; j < AllPictures.length; j++){
+
+                                userPicture = await nameofuser(AllPictures[j].id_User);
+
+                                AllPictures[j] = {
+                                    id: AllPictures[j].id,
+                                    link: AllPictures[j].link,
+                                    userLastname: userPicture[0],
+                                    userFirstname: userPicture[1],
+                                    userMail: userPicture[2]
+                                }
+
+                            }
+                        }
+
+                        Activities[i] = {
+                            name: Activities[i].title,
+                            pictures: AllPictures
+                        }
+                    }
+                }
+
+                return res.status(200).json({Activities});
+
+            } else {
+                return res.status(409).json({'error': 'Aucun event !'});
+            }
+
+        })
+        .catch(err => {
+            return res.status(500).json({'error': 'Impossible de vérifier les events !'});
+        });
+    },
     getLike: function(req, res){
 
         var token = req.header('token');
-        var id_Picture = req.body.id_Picture;
+        var id_Picture = req.query.id_Picture;
         decryptedToken = jwt.decode(token);
         id_Rank = decryptedToken.userRank;
         id_User = decryptedToken.userId;
@@ -734,7 +781,7 @@ module.exports = {
             .then(function(like){
 
                 if(like) {
-                    return res.status(201).json({'success': "OK !"});
+                    return res.status(201).json({'success': "OK"});
                 } else {
                     return res.status(409).json({'error': 'Pas like !'});
                 }
@@ -746,6 +793,26 @@ module.exports = {
             return res.status(500).json({ 'error': 'Vous n\'avez pas la permission de liker !'});
         }
 
+    },
+    getAllLike: function(req, res){
+
+        var id_Picture = req.query.id_Picture;
+
+            db.Like.findAll({
+                attributes: ['id_User','id_Picture'],
+                where: {id_Picture: id_Picture}
+            })
+            .then(function(AllLike){
+
+                if(AllLike) {
+                    return res.status(201).json({AllLike});
+                } else {
+                    return res.status(409).json({'error': 'Pas de like !'});
+                }
+            })
+            .catch(function(err) {
+                return res.status(500).json({ 'error': 'Impossible de vérifier les likes !'});
+            });
     },
     like: function(req, res){
 

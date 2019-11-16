@@ -159,38 +159,71 @@
             return res.status(500).json({ 'error': 'Vous n\'avez pas la permission de modifier le profil !'});
         }
     },
-    eventOld: function(req, res){
+    getAll: function(req, res){
 
-        var id_Activities = req.query.id_Activities;
+        var token = req.header('token');
+        var id = req.query.id_Rank;
+        decryptedToken = jwt.decode(token);
+        id_Rank = decryptedToken.userRank;
+        id_User = decryptedToken.userId;
 
-        db.Activities.findOne({
-            attributes: ['id','title','description','picture','begin_date','end_date','top_event','price','id_User','id_Center','id_State','id_Recurrence'],
-            where: {id: id_Activities}
-        })
-        .then(OldActivitiesFound => {
-            if(OldActivitiesFound) {
-                return res.status(200).json({
-                    'id': OldActivitiesFound.id,
-                    'title': OldActivitiesFound.title,
-                    'description': OldActivitiesFound.description,
-                    'picture': OldActivitiesFound.picture,
-                    'begin_date': OldActivitiesFound.begin_date,
-                    'end_date': OldActivitiesFound.end_date,
-                    'top_event': OldActivitiesFound.top_event,
-                    'price': OldActivitiesFound.price,
-                    'id_User': OldActivitiesFound.id_User,
-                    'id_Center': OldActivitiesFound.id_Center,
-                    'id_State': OldActivitiesFound.id_State,
-                    'id_Recurrence': OldActivitiesFound.id_Recurrence
+        if(id_Rank >= 1) {
+
+            if(id) {
+                db.User.findAll({
+                    attributes: ['id','mail','lastname','firstname','id_Rank','id_Center','id_Preferences'],
+                    where: {id_Rank: id}
+                })
+                .then(allUsers => {
+                    if(allUsers) {
+                        return res.status(200).json({allUsers});
+                    } else {
+                        return res.status(409).json({'error': 'Aucun utilisateurs avec ce rang !'});
+                    }
+    
+                })
+                .catch(err => {
+                    return res.status(500).json({'error': 'Impossible de vérifier les utilisateurs !'});
                 });
             } else {
-                return res.status(409).json({'error': 'Cette activité n\'existe pas !'});
+                db.User.findAll({
+                    attributes: ['id','mail','lastname','firstname','id_Rank','id_Center','id_Preferences'],
+                })
+                .then(allUsers => {
+                    if(allUsers) {
+                        return res.status(200).json({allUsers});
+                    } else {
+                        return res.status(409).json({'error': 'Aucun utilisateurs !'});
+                    }
+    
+                })
+                .catch(err => {
+                    return res.status(500).json({'error': 'Impossible de vérifier les utilisateurs !'});
+                });
             }
+        } else {
+            return res.status(500).json({ 'error': 'Vous devez être membre du BDE pour accéder à ces informations !'});
+        }
 
-        })
-        .catch(err => {
-            return res.status(500).json({'error': 'Impossible de vérifier l\'activité !'});
-        });
+    },
+    get: function(req, res){
+        var id = req.query.id;
+
+                db.User.findAll({
+                    attributes: ['id','mail','lastname','firstname','id_Rank','id_Center','id_Preferences'],
+                    where: {id: id}
+                })
+                .then(user => {
+                    if(user) {
+                        return res.status(200).json({user});
+                    } else {
+                        return res.status(409).json({'error': 'Aucun utilisateurs avec cette id !'});
+                    }
+    
+                })
+                .catch(err => {
+                    return res.status(500).json({'error': 'Impossible de vérifier les utilisateurs !'});
+                });
 
     }
  }
