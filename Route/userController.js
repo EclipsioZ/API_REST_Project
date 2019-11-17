@@ -29,16 +29,17 @@
         var password = req.body.password;
         var id_Center = req.body.id_Center;
 
-        if(mail == "" || lastname == "" ||  firstname == "" ||  password == ""  ||  id_Center == "") {
-            return res.status(400).json({'error': 'Paramètres manquants !'});
-        }
-
+        //Vérifie si un utilisateur à déjà créé un compte à partir de son mail
         db.User.findOne({
             attributes: ['mail'],
             where: {mail: mail}
         })
         .then(function(userFound){
+
+            //Vérifie si il n'y a aucun utilisateur avec cette adresse mail
             if(!userFound) {
+
+                //Encrypte le mot de passe entrée par l'utilisateur
                 bcrypt.hash(password, 5, function(err, bcryptedPassword) {
                   var newUser = db.User.create({
                     mail: mail,
@@ -69,20 +70,18 @@
     },
     login: function(req, res){
 
+        //Récupération des paramètres
         var mail = req.body.mail;
         var password = req.body.password;
 
-
-        if (mail == "" || password == ""){
-            return res.status(400).json({'error': 'Paramètres manquants !'});
-        }
-
+        //Récupère les informations d'un utilisateur à partir de son mail
         db.User.findOne({
             attributes: ['mail','lastname','firstname','password','id','id_Rank','id_Center','id_Preferences'],
             where: { mail: mail }
         })
         .then(function(userFound){      
             if(userFound) {
+                //Permet de comparer le mot de passe rentré par l'utilisateur avec celui encrypté dans la base de donnée
                 bcrypt.compare(password, userFound.password, function(errBycrypt, resBycrypt) {
                     if(resBycrypt) {
                         return res.status(200).json({
@@ -110,6 +109,7 @@
     },
     update: function(req, res){
 
+        //Récupération des paramètres
         var token = req.header('token');
         decryptedToken = jwt.decode(token);
         var id = req.body.id;
@@ -122,6 +122,7 @@
         userRank = decryptedToken.userRank;
         id_User = decryptedToken.userId;
 
+        //Vérifie si l'utilisateur est inscrit
         if(userRank >= 1) {
             db.User.findOne({
                 attributes: ['id','lastname','firstname','mail','password','id_Preferences','id_Center'],
@@ -129,6 +130,7 @@
             })
             .then(function(updateUser){
 
+                //Met à jour ses informations
                 if(updateUser) {
                     bcrypt.hash(password, 5, function(err, bcryptedPassword) {
                         db.User.update({
@@ -161,6 +163,7 @@
     },
     getAll: function(req, res){
 
+        //Récupération des paramètres
         var token = req.header('token');
         var id = req.query.id_Rank;
         decryptedToken = jwt.decode(token);
@@ -169,7 +172,9 @@
 
         if(id_Rank >= 1) {
 
+            //Vérifie si le paramètre id est pas null
             if(id) {
+                //Récupère tous les utilisateurs avec un rang précis
                 db.User.findAll({
                     attributes: ['id','mail','lastname','firstname','id_Rank','id_Center','id_Preferences'],
                     where: {id_Rank: id}
@@ -186,6 +191,7 @@
                     return res.status(500).json({'error': 'Impossible de vérifier les utilisateurs !'});
                 });
             } else {
+                //Récupère tous les utilisateurs sans un rang précis
                 db.User.findAll({
                     attributes: ['id','mail','lastname','firstname','id_Rank','id_Center','id_Preferences'],
                 })
@@ -207,9 +213,12 @@
 
     },
     get: function(req, res){
+
+        //Récupération des paramètres
         var id = req.query.id;
 
-                db.User.findAll({
+                //Récupére toutes les informations d'un utilisateur à partir de son identifiant
+                db.User.findOne({
                     attributes: ['id','mail','lastname','firstname','id_Rank','id_Center','id_Preferences'],
                     where: {id: id}
                 })

@@ -1,5 +1,5 @@
 /**
- * @file centerController
+ * @file tokenController
  * @author EclipsioZ
  * @license GPL-3.0
  */
@@ -20,6 +20,7 @@
 
     page: function(req, res){
 
+        //Récupération des paramètres
         var token = req.header('token');
         test = jwt.decode(token);
         console.log(test);
@@ -28,6 +29,7 @@
     },
     token: function(req, res){
 
+        //Récupération des paramètres
         var token = req.header('token');
         decryptedToken = jwt.decode(token);
         id_Rank = decryptedToken.userRank;
